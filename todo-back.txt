@@ -1,0 +1,7 @@
+PRIORITIES
+- Add transaction
+
+SECONDARY
+- Delete friend
+- Delete transaction
+- Edit transaction
