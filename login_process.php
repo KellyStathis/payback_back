@@ -4,7 +4,7 @@
     require 'database.php';
      
     // Use a prepared statement
-    $stmt = $mysqli->prepare("SELECT COUNT(*), id, password FROM users WHERE name=?");   
+    $stmt = $mysqli->prepare("SELECT COUNT(*), id, password FROM users WHERE username=?");   
     // Bind the parameter
     $stmt->bind_param('s', $user);
     $user = $_POST['username'];
@@ -17,6 +17,7 @@
     $pwd_guess = $_POST['password'];
     // Compare the submitted password to the actual password hash
     if ($cnt == 1 && crypt($pwd_guess, $pwd_hash)==$pwd_hash) {
+    //if ($cnt == 1 && $pwd_guess==$pwd_hash) {
         // Login succeeded!
         session_start();
         $_SESSION['user_id'] = $user_id;
