@@ -4,6 +4,11 @@
     session_start();
     require 'database.php'; 
     
+     // CSRF token
+    if ($_SESSION['token'] !== $_POST['token']) {
+         die("Request forgery detected");
+    }
+    
     // Use a prepared statement
     $stmt = $mysqli->prepare("SELECT COUNT(*), id, username FROM users WHERE email=?");
     // Bind the parameter
