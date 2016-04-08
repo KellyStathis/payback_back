@@ -96,7 +96,7 @@
         $response_array['total'] = $total_amount;
         $response_array['date_added'] = $date_added;
         for ($i = 0; $i < count($owers); $i++) {
-             $response_array['owers'][$i]['friend_id'] = $owers[$i];
+             $response_array['owers'][$i]['ower_id'] = $owers[$i];
              $response_array['owers'][$i]['owed'] = $total_amount / (count($owers) + 1);
              $response_array['owers'][$i]['paid'] = 0;
              
