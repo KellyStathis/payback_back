@@ -5,16 +5,16 @@
     session_start();
     require 'database.php';
     
-    /*
+    // COMMENT THIS OUT TO TEST STAND-ALONE
     // CSRF token
     if ($_SESSION['token'] !== $_POST['token']) {
          die("Request forgery detected");
     }
     
     $user_id = $_POST['user_id'];
-    */
-    
-    $user_id = 15;
+    //
+
+    //$user_id = 15; // UNCOMMENT TO TEST STAND-ALONE
     $response_array = array();
     
     
@@ -50,8 +50,6 @@
         $stmt_owers->close();
         
         $response_array = existing_expense_toArray($expense_id, $expense_name, $buyer_id, $total_amount, $date_added, $owers, $response_array, $user_id);
-        echo "response array after function return: \n";
-        print_r($response_array);
     }
     $stmt->close();
                              
@@ -83,13 +81,10 @@
         $stmt_expense->bind_result($expense_name, $buyer_id, $total_amount, $date_added);
         $stmt_expense->close();
         $response_array = existing_expense_toArray($expense_id, $expense_name, $buyer_id, $total_amount, $date_added, $owers, $response_array, $user_id);
-        echo "response array after function return: \n";
-        print_r($response_array);
     }
     $stmt->close();
 
     function existing_expense_toArray($expense_id, $expense_name, $buyer_id, $total_amount, $date_added, $owers, $response_array, $user_id) {
-        echo "expense id found: " . $expense_id . "\n";
         $response_array['expenses'][$expense_id]['expense_id'] = $expense_id;
         $response_array['expenses'][$expense_id]['expense_name'] = $expense_name;
         $response_array['expenses'][$expense_id]['buyer_id'] = $buyer_id;
@@ -101,23 +96,29 @@
             $response_array['expenses'][$expense_id]['owers'][$i]['owed'] = $owers[$i]['owed'];
             $response_array['expenses'][$expense_id]['owers'][$i]['paid'] = $owers[$i]['paid'];
             if ($buyer_id == $user_id) { // User is buyer
-                // FIXME Add expense to ower friends's list - curently overwrites
-                $response_array['friends'][$ower_id]['expense_id'] = $expense_id;
+                if (isset($response_array['friends'][$ower_id]['expense_id'])) {
+                    array_push($response_array['friends'][$ower_id]['expense_id'], $expense_id);
+                }
+                else {
+                    $response_array['friends'][$ower_id]['expense_id'] = array();
+                    array_push($response_array['friends'][$ower_id]['expense_id'], $expense_id);
+                }
+                
             }
             else { // User is ower
-                // FIXME Add expense to buyer friend's list - curently overwrites
-                $response_array['friends'][$buyer_id]['expense_id'] = $expense_id;      
+                if (isset($response_array['friends'][$ower_id]['expense_id'])) {
+                    array_push($response_array['friends'][$ower_id]['expense_id'], $expense_id);
+                }
+                else {
+                    $response_array['friends'][$ower_id]['expense_id'] = array();
+                    array_push($response_array['friends'][$ower_id]['expense_id'], $expense_id);
+                }   
             }
         }
-        echo "response array before function return: \n";
-        print_r($response_array);
         return $response_array;
      }
     
-    //return json_encode($response_array);
-    echo "response array at end: \n";
-    print_r($response_array);
-    echo "JSON: \n";
-    echo json_encode($response_array);
+    //print_r($response_array);
+    echo json_encode($response_array, JSON_NUMERIC_CHECK);
 
 ?>
