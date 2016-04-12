@@ -16,6 +16,7 @@
 
     //$user_id = 15; // UNCOMMENT TO TEST STAND-ALONE
     $response_array = array();
+    $response_array["success"] = true;
     
     
     // QUERY EXPENSES - where user is buyer
@@ -33,6 +34,9 @@
         $stmt_owers = $mysqli->prepare("select ower_id, amount_owed, amount_paid from owed_and_paid WHERE expense_id=?");
         if(!$stmt_owers) {
             printf("Query Prep Failed: %s\n", $mysqli->error);
+            $response_array['success'] = false;
+            $response_array['message'] = "Query prep failed";
+            echo json_encode($response_array);
             exit;
         }
         $stmt_owers->bind_param('i', $expense_id);
@@ -58,6 +62,9 @@
     $stmt = $mysqli->prepare("select expense_id, amount_owed, amount_paid from owed_and_paid WHERE ower_id=?");
     if(!$stmt){
         printf("Query Prep Failed: %s\n", $mysqli->error);
+        $response_array['success'] = false;
+        $response_array['message'] = "Query prep failed";
+        echo json_encode($response_array);
         exit;
     }
     $stmt->bind_param('i', $user_id);
@@ -120,5 +127,6 @@
     
     //print_r($response_array);
     echo json_encode($response_array, JSON_NUMERIC_CHECK);
+    exit;
 
 ?>
