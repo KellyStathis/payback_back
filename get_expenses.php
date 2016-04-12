@@ -103,22 +103,22 @@
             $response_array['expenses'][$expense_id]['owers'][$i]['owed'] = $owers[$i]['owed'];
             $response_array['expenses'][$expense_id]['owers'][$i]['paid'] = $owers[$i]['paid'];
             if ($buyer_id == $user_id) { // User is buyer
-                if (isset($response_array['friends'][$ower_id]['expense_id'])) {
-                    array_push($response_array['friends'][$ower_id]['expense_id'], $expense_id);
+                if (isset($response_array['friends'][$ower_id])) {
+                    array_push($response_array['friends'][$ower_id], $expense_id);
                 }
                 else {
-                    $response_array['friends'][$ower_id]['expense_id'] = array();
-                    array_push($response_array['friends'][$ower_id]['expense_id'], $expense_id);
+                    $response_array['friends'][$ower_id] = array();
+                    array_push($response_array['friends'][$ower_id], $expense_id);
                 }
                 
             }
             else { // User is ower
-                if (isset($response_array['friends'][$ower_id]['expense_id'])) {
-                    array_push($response_array['friends'][$ower_id]['expense_id'], $expense_id);
+                if (isset($response_array['friends'][$ower_id])) {
+                    array_push($response_array['friends'][$ower_id], $expense_id);
                 }
                 else {
-                    $response_array['friends'][$ower_id]['expense_id'] = array();
-                    array_push($response_array['friends'][$ower_id]['expense_id'], $expense_id);
+                    $response_array['friends'][$ower_id] = array();
+                    array_push($response_array['friends'][$ower_id], $expense_id);
                 }   
             }
         }
