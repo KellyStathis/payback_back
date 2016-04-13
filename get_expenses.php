@@ -5,18 +5,16 @@
     session_start();
     require 'database.php';
     
-    /*
     // COMMENT THIS OUT TO TEST STAND-ALONE
     // CSRF token
     if ($_SESSION['token'] !== $_POST['token']) {
          die("Request forgery detected");
     }
-    */
     
-    //$user_id = $_POST['user_id'];
+    $user_id = $_POST['user_id'];
     //
 
-    $user_id = 15; // UNCOMMENT TO TEST STAND-ALONE
+    //$user_id = 19; // UNCOMMENT TO TEST STAND-ALONE
     $response_array = array();
     $response_array["success"] = true;
     
@@ -116,20 +114,20 @@
                 
             }
             else { // User is ower
-                if (isset($response_array['friends'][$ower_id])) {
-                    array_push($response_array['friends'][$ower_id], $expense_id);
+                if (isset($response_array['friends'][$buyer_id])) {
+                    array_push($response_array['friends'][$buyer_id], $expense_id);
                 }
                 else {
-                    $response_array['friends'][$ower_id] = array();
-                    array_push($response_array['friends'][$ower_id], $expense_id);
+                    $response_array['friends'][$buyer_id] = array();
+                    array_push($response_array['friends'][$buyer_id], $expense_id);
                 }   
             }
         }
         return $response_array;
      }
     
-    print_r($response_array);
+    //print_r($response_array); // UNCOMMENT TO TEST STAND-ALONE
     echo json_encode($response_array, JSON_NUMERIC_CHECK);
-    //exit;
+    exit; // COMMENT THIS OUT TO TEST STAND-ALONE
 
 ?>
