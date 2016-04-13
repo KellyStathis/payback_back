@@ -5,31 +5,33 @@
     session_start();
     require 'database.php';
     
+    /*
     // COMMENT THIS OUT TO TEST STAND-ALONE
     // CSRF token
     if ($_SESSION['token'] !== $_POST['token']) {
          die("Request forgery detected");
     }
+    */
     
-    $user_id = $_POST['user_id'];
+    //$user_id = $_POST['user_id'];
     //
 
-    //$user_id = 15; // UNCOMMENT TO TEST STAND-ALONE
+    $user_id = 15; // UNCOMMENT TO TEST STAND-ALONE
     $response_array = array();
     $response_array["success"] = true;
     
     
     // QUERY EXPENSES - where user is buyer
-    $stmt = $mysqli->prepare("select id, expense_name, buyer_id, total_amount, date_added from expenses WHERE buyer_id=?");
-    if(!$stmt){
+    $stmt_buyer = $mysqli->prepare("select id, expense_name, buyer_id, total_amount, date_added from expenses WHERE buyer_id=?");
+    if(!$stmt_buyer){
         printf("Query Prep Failed: %s\n", $mysqli->error);
         exit;
     }
-    $stmt->bind_param('i', $user_id);
-    $stmt->execute();
-    $stmt->store_result();
-    $stmt->bind_result($expense_id, $expense_name, $buyer_id, $total_amount, $date_added);
-    while($stmt->fetch()) {
+    $stmt_buyer->bind_param('i', $user_id);
+    $stmt_buyer->execute();
+    $stmt_buyer->store_result();
+    $stmt_buyer->bind_result($expense_id, $expense_name, $buyer_id, $total_amount, $date_added);
+    while($stmt_buyer->fetch()) {
         // QUERY OWED AND PAID - where user is buyer
         $stmt_owers = $mysqli->prepare("select ower_id, amount_owed, amount_paid from owed_and_paid WHERE expense_id=?");
         if(!$stmt_owers) {
@@ -55,27 +57,27 @@
         
         $response_array = existing_expense_toArray($expense_id, $expense_name, $buyer_id, $total_amount, $date_added, $owers, $response_array, $user_id);
     }
-    $stmt->close();
+    $stmt_buyer->close();
                              
                               
     // QUERY OWED AND PAID - where user is ower
-    $stmt = $mysqli->prepare("select expense_id, amount_owed, amount_paid from owed_and_paid WHERE ower_id=?");
-    if(!$stmt){
+    $stmt_ower = $mysqli->prepare("select expense_id, amount_owed, amount_paid from owed_and_paid WHERE ower_id=?");
+    if(!$stmt_ower){
         printf("Query Prep Failed: %s\n", $mysqli->error);
         $response_array['success'] = false;
         $response_array['message'] = "Query prep failed";
         echo json_encode($response_array);
         exit;
     }
-    $stmt->bind_param('i', $user_id);
-    $stmt->execute();
-    $stmt->store_result();
-    $stmt->bind_result($expense_id, $amount_owed, $amount_paid);
+    $stmt_ower->bind_param('i', $user_id);
+    $stmt_ower->execute();
+    $stmt_ower->store_result();
+    $stmt_ower->bind_result($expense_id, $amount_owed, $amount_paid);
     $owers = array();
-    $owers[0]['ower_id'] = $user_id;
-    $owers[0]['owed'] = $amount_owed;
-    $owers[0]['paid'] = $amount_paid;
-    while($stmt->fetch()) {
+    while($stmt_ower->fetch()) {
+        $owers[0]['ower_id'] = $user_id;
+        $owers[0]['owed'] = $amount_owed;
+        $owers[0]['paid'] = $amount_paid;
         // QUERY EXPENSES - where user is ower
         $stmt_expense = $mysqli->prepare("select expense_name, buyer_id, total_amount, date_added from expenses WHERE id=?");
         if(!$stmt_expense)  {
@@ -86,10 +88,11 @@
         $stmt_expense->execute();
         $stmt_expense->store_result();
         $stmt_expense->bind_result($expense_name, $buyer_id, $total_amount, $date_added);
+        $stmt_expense->fetch();
         $stmt_expense->close();
         $response_array = existing_expense_toArray($expense_id, $expense_name, $buyer_id, $total_amount, $date_added, $owers, $response_array, $user_id);
     }
-    $stmt->close();
+    $stmt_ower->close();
 
     function existing_expense_toArray($expense_id, $expense_name, $buyer_id, $total_amount, $date_added, $owers, $response_array, $user_id) {
         $response_array['expenses'][$expense_id]['expense_id'] = $expense_id;
@@ -125,8 +128,8 @@
         return $response_array;
      }
     
-    //print_r($response_array);
+    print_r($response_array);
     echo json_encode($response_array, JSON_NUMERIC_CHECK);
-    exit;
+    //exit;
 
 ?>
