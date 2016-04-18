@@ -24,7 +24,6 @@
     $response_array["success"] = true;
     
     // Check to make sure user is not paying off more than total amount owed
-    // FIXME check that it is the total amount owed TO A SPECIFIC USER
     $sum_stmt = $mysqli->prepare("select sum(amount_owed) from owed_and_paid JOIN expenses on (expenses.id=owed_and_paid.expense_id) WHERE ower_id=? AND expenses.buyer_id=?");
     if(!$sum_stmt){
         printf("Query Prep Failed: %s\n", $mysqli->error);
