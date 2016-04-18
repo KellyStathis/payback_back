@@ -14,7 +14,7 @@
     $amount_paid = $_POST['amount_paid'];
     //
     
-    /*// UNCOMMENT TO TEST STAND-ALON
+    /*// UNCOMMENT TO TEST STAND-ALONE
     $payer_id = 19;
     $payee_id = 15;
     $amount_paid = 6.40;
@@ -24,14 +24,15 @@
     $response_array["success"] = true;
     
     // Check to make sure user is not paying off more than total amount owed
-    $sum_stmt = $mysqli->prepare("select sum(amount_owed) from owed_and_paid WHERE ower_id=?");
+    // FIXME check that it is the total amount owed TO A SPECIFIC USER
+    $sum_stmt = $mysqli->prepare("select sum(amount_owed) from owed_and_paid JOIN expenses on (expenses.id=owed_and_paid.expense_id) WHERE ower_id=? AND expenses.buyer_id=?");
     if(!$sum_stmt){
         printf("Query Prep Failed: %s\n", $mysqli->error);
         $response_array["success"] = false;
         json_encode($response_array);
         exit;  
     }
-    $sum_stmt->bind_param('i', $payer_id);
+    $sum_stmt->bind_param('ii', $payer_id, $payee_id);
     $sum_stmt->execute();
     $sum_stmt->store_result();
     $sum_stmt->bind_result($total_owed);
