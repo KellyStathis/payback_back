@@ -97,8 +97,9 @@
     }
     $stmt->close();
 
-    //print_r($response_array); // UNCOMMENT TO TEST STAND-ALONE
-    echo json_encode($response_array, JSON_NUMERIC_CHECK);
+    //echo json_encode($response_array, JSON_NUMERIC_CHECK);
+    
+    print_r(json_encode($response_array, JSON_NUMERIC_CHECK));
     exit; // COMMENT OUT TO TEST STAND-ALONE
     
     
