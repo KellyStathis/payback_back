@@ -42,9 +42,6 @@
     }
     else { // Check date values
         list($year, $month, $day) = split('-', $date_added);
-        echo "month: " + $month + "\n";
-        echo "day: " + $day + "\n";
-        echo "year: " + $year + "\n";
         if (!checkdate($month, $day, $year)) {
             echo json_encode(array(
                 "success" => false,
@@ -90,6 +87,7 @@
     exit;
     
     function jsonify_new_expense($expense_id, $expense_name, $buyer_id, $total_amount, $date_added, $owers) {
+        $response_array['success'] = true;
         $response_array['expense_id'] = $expense_id;
         $response_array['expense_name'] = $expense_name;
         $response_array['buyer_id'] = $buyer_id;
