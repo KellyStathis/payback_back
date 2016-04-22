@@ -4,7 +4,7 @@
     session_start();
     require 'database.php';
     
-    $json_data = json_decode('php://input');
+    $json_data = json_decode(file_get_contents('php://input'), true);
     $expense_name = $json_data['expense_name'];
     $buyer_id = $json_data['buyer_id'];
     $total_amount = $json_data['total_amount'];
